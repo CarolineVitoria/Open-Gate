@@ -28,8 +28,9 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('é preciso informar email e senha');
     } else {
+      const passHash = await this.hashingService.hash(LoginDto.password);
       passwordIsValid = await this.hashingService.compare(
-        LoginDto.password,
+        passHash,
         user.passwordHash,
       );
     }

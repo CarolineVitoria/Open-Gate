@@ -39,7 +39,7 @@ export class UserService {
     return await this.userRepositoy.save(user);
   }
 
-  async readUser(findUserByCpfDto: FindUserByCpfDto) {
+  async readUser(findUserByCpfDto: FindUserByCpfDto): Promise<User> {
     const user = await this.userRepositoy.findOneBy({
       cpf: findUserByCpfDto.cpf,
     });

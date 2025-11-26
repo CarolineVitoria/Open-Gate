@@ -10,23 +10,22 @@ export class UserCompanyService {
   constructor(
     @InjectRepository(UserCompany)
     private readonly userCompanyRepository: Repository<UserCompany>,
-    private readonly userSevice: UserService,
+    private readonly userService: UserService,
   ) {}
 
-  async registerUserInCompany(idCompany: string, registerUser: FindUserByCpfDto) {
+  async registerUserInCompany(
+    idCompany: string,
+    registerUser: FindUserByCpfDto,
+  ): Promise<UserCompany> {
+    const user = await this.userService.readUser(registerUser);
 
-    const user = await this.userSevice.readUser(registerUser);
-    const registerData = {
-      idCompany: idCompany,
-      idUser: user.id,
-      role: 'member'
-    }
+    const register = this.userCompanyRepository.create({
+      user: user,
+      company: { id: idCompany },
+      role: 'member',
+    });
+    await this.userCompanyRepository.save(register);
 
-    const register = this.userCompanyRepository.create(
-      {
-        registerData
-      }
-    )
-    this.userCompanyRepository.save(register);
+    return register;
   }
 }

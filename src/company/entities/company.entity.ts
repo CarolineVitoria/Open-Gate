@@ -12,7 +12,7 @@ import { UserCompany } from 'src/user_company/entities/user_company.entity';
 @Entity()
 export class Company {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ type: 'varchar', length: 50 })
   name: string;

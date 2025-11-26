@@ -13,6 +13,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(HashingServiceProtocol)
     private readonly hashingService: HashingServiceProtocol,
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
@@ -20,6 +21,12 @@ export class AuthService {
   ) {}
 
   async login(LoginDto: LoginDto) {
+    console.log('HASHING SERVICE:', this.hashingService);
+    console.log('TTL:', this.jwtConfiguration.jxTtl);
+    console.log('SECRET:', this.jwtConfiguration.secret);
+    console.log('ISSUER:', this.jwtConfiguration.issuer);
+    console.log('AUD:', this.jwtConfiguration.audience);
+
     let passwordIsValid = false;
     const user = await this.userRepository.findOneBy({
       email: LoginDto.email,
@@ -28,9 +35,8 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('é preciso informar email e senha');
     } else {
-      const passHash = await this.hashingService.hash(LoginDto.password);
       passwordIsValid = await this.hashingService.compare(
-        passHash,
+        LoginDto.password,
         user.passwordHash,
       );
     }

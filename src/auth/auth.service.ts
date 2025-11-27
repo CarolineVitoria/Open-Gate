@@ -7,12 +7,15 @@ import { HashingServiceProtocol } from './hashing/hasing.service';
 import jwtConfig from 'src/config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UserCompany } from 'src/user_company/entities/user_company.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserCompany)
+    private readonly userCompanyRepository: Repository<UserCompany>,
     @Inject(HashingServiceProtocol)
     private readonly hashingService: HashingServiceProtocol,
     @Inject(jwtConfig.KEY)
@@ -43,11 +46,17 @@ export class AuthService {
     if (!passwordIsValid) {
       throw new UnauthorizedException('Usuário ou senha inválido');
     }
+    const userCompanies = await this.userCompanyRepository.find({
+      where: { user: { id: user.id } },
+    });
+
+    const companyIds = userCompanies.map((uc) => uc.company.id);
 
     const accessToken = await this.jwtService.signAsync(
       {
         id: user.id,
         name: user.name,
+        companies: companyIds,
       },
       {
         audience: this.jwtConfiguration.audience,

@@ -8,11 +8,12 @@ import { User } from 'src/users/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
+import { UserCompany } from 'src/user_company/entities/user_company.entity';
 
 @Global() //pode ser usado na aplicação inteira
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, UserCompany]),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
